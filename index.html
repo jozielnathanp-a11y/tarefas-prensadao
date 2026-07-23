@@ -5,278 +5,347 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tarefas — Cozinha Prensadão</title>
 <style>
-:root{--bg:#1a1a2e;--card:#16213e;--accent:#e94560;--accent2:#0f3460;--green:#4ecca3;--yellow:#f5b041;--text:#eee;--dim:#aaa;--border:#2a2a4a;--blue:#4a9eff}
+:root{--bg:#1a1a2e;--card:#16213e;--accent:#e94560;--accent2:#0f3460;--green:#4ecca3;--yellow:#f5b041;--text:#eee;--dim:#aaa;--border:#2a2a4a;--blue:#4a9eff;--red:#ff4757}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:10px;max-width:600px;margin:0 auto}
 header{text-align:center;padding:14px 0 8px}
-header h1{font-size:1.5rem;background:linear-gradient(135deg,var(--accent),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+header h1{font-size:1.5rem}
 header p{color:var(--dim);font-size:.8rem;margin-top:4px}
+.sync-ok{color:var(--green)} .sync-err{color:var(--red)}
 .stats{display:flex;gap:8px;margin:10px 0}
-.stat{flex:1;background:var(--card);border-radius:10px;padding:8px 6px;text-align:center;border:1px solid var(--border)}
-.stat-num{font-size:1.4rem;font-weight:700}
-.stat-label{font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
-.stat.pendente .stat-num{color:var(--yellow)}
-.stat.concluida .stat-num{color:var(--green)}
-.stat.urgente .stat-num{color:var(--accent)}
-.add-form{background:var(--card);border-radius:12px;padding:12px;margin:10px 0;border:1px solid var(--border)}
-.add-form input,.add-form select,.add-form textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-size:.9rem;margin-bottom:8px}
-.add-form input::placeholder,.add-form textarea::placeholder{color:#666}
-.add-form select{cursor:pointer}
-.form-row{display:flex;gap:8px}
-.form-row>*{flex:1}
-.btn-add{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:8px;padding:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:transform .15s}
-.btn-add:hover{transform:scale(1.02)}
+.stat{flex:1;background:var(--card);border-radius:10px;padding:8px;text-align:center;border:1px solid var(--border)}
+.stat-num{font-size:1.4rem;font-weight:bold} .stat-label{font-size:.7rem;color:var(--dim)}
+.stat-pend .stat-num{color:var(--yellow)} .stat-done .stat-num{color:var(--green)} .stat-urgent .stat-num{color:var(--red)}
+.form{background:var(--card);border-radius:12px;padding:12px;margin:10px 0;border:1px solid var(--border)}
+.form-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.form input,.form select,.form textarea{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 10px;font-size:.9rem}
+.form input[type=text]{flex:1;min-width:150px}
+.form textarea{width:100%;resize:vertical;min-height:40px}
+.form select{cursor:pointer}
+.form label{display:flex;align-items:center;gap:4px;font-size:.75rem;color:var(--dim)}
+.btn-add{width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px;font-size:1rem;font-weight:bold;cursor:pointer;transition:.2s}
+.btn-add:hover{background:#c73e54}
 .btn-add:active{transform:scale(.98)}
 .filters{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap}
-.filter-btn{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 14px;color:var(--dim);font-size:.8rem;cursor:pointer;transition:all .15s}
-.filter-btn:hover{border-color:var(--accent)}
-.filter-btn.active{background:var(--accent2);color:#fff;border-color:var(--accent)}
-.task-list{display:flex;flex-direction:column;gap:8px}
-.task{background:var(--card);border-radius:12px;padding:12px;display:flex;align-items:flex-start;gap:10px;border-left:4px solid var(--border);transition:opacity .2s}
-.task.priority-alta{border-left-color:var(--accent)}
-.task.priority-media{border-left-color:var(--yellow)}
-.task.priority-baixa{border-left-color:var(--green)}
+.filters button{background:var(--card);border:1px solid var(--border);color:var(--dim);border-radius:20px;padding:6px 14px;font-size:.8rem;cursor:pointer;transition:.2s}
+.filters button:hover{border-color:var(--accent2)} .filters button.active{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+.task-list{margin-bottom:20px}
+.task{display:flex;align-items:flex-start;gap:10px;background:var(--card);border-radius:10px;padding:10px;margin-bottom:8px;border-left:4px solid var(--border);transition:.2s;animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.task:hover{border-color:var(--accent2)}
 .task.done{opacity:.5}
 .task.done .task-title{text-decoration:line-through}
-.task-check{width:24px;height:24px;border:2px solid var(--border);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;margin-top:2px}
-.task-check:hover{border-color:var(--green)}
-.task-check.checked{background:var(--green);border-color:var(--green)}
-.task-check.checked::after{content:'✓';color:#fff;font-weight:700;font-size:.9rem}
+.task-prio-alta{border-left-color:var(--red)}
+.task-prio-media{border-left-color:var(--yellow)}
+.task-prio-baixa{border-left-color:var(--green)}
+.task-prio-urgente{border-left-color:var(--red);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,71,87,.3)}50%{box-shadow:0 0 12px 2px rgba(255,71,87,.5)}}
+.task-check{width:22px;height:22px;border:2px solid var(--border);border-radius:6px;cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:14px;transition:.2s}
+.task-check:hover{border-color:var(--green)} .task-check.checked{background:var(--green);border-color:var(--green);color:#fff}
 .task-body{flex:1;min-width:0}
 .task-title{font-weight:600;font-size:.95rem}
-.task-details{font-size:.8rem;color:var(--dim);margin-top:2px}
-.task-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-.badge{font-size:.65rem;padding:2px 8px;border-radius:10px;font-weight:600}
-.badge-person{background:var(--accent2);color:var(--blue)}
-.badge-freq{background:var(--bg);color:var(--dim);border:1px solid var(--border)}
-.task-del{background:none;border:none;color:#555;font-size:1.1rem;cursor:pointer;padding:4px;transition:color .15s;flex-shrink:0}
-.task-del:hover{color:var(--accent)}
-.empty{text-align:center;padding:40px 20px;color:var(--dim)}
-.empty-emoji{font-size:2.5rem;margin-bottom:8px}
-.loading{text-align:center;padding:20px;color:var(--dim)}
-.spin{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-right:6px;vertical-align:middle}
-@keyframes spin{to{transform:rotate(360deg)}}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--green);color:#fff;padding:10px 20px;border-radius:10px;font-size:.85rem;font-weight:600;opacity:0;transition:all .3s;z-index:100}
+.task-details{font-size:.8rem;color:var(--dim);margin-top:3px}
+.task-badges{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.badge{font-size:.7rem;padding:2px 8px;border-radius:10px;background:var(--bg);color:var(--dim)}
+.badge-person{background:var(--accent2);color:#fff}
+.badge-freq{color:var(--blue)}
+.badge-deadline{font-weight:bold}
+.badge-fixed{background:var(--accent);color:#fff}
+.badge-alta{color:var(--red)} .badge-media{color:var(--yellow)} .badge-baixa{color:var(--green)} .badge-urgente{background:var(--red);color:#fff;animation:pulse 2s infinite}
+.task-del{background:none;border:none;color:var(--dim);cursor:pointer;font-size:16px;padding:4px;transition:.2s}
+.task-del:hover{color:var(--red)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--green);color:#fff;padding:10px 20px;border-radius:10px;font-size:.9rem;transition:.3s;z-index:999;opacity:0}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-.sync{font-size:.7rem;color:var(--dim);text-align:center;margin-top:6px}
-.sync-ok{color:var(--green)}
+.empty{text-align:center;color:var(--dim);padding:40px 20px;font-size:.9rem}
+.loading{text-align:center;padding:20px;color:var(--dim)}
 </style>
 </head>
 <body>
 <header>
   <h1>📋 Tarefas — Cozinha</h1>
-  <p id="lastSync">Carregando...</p>
+  <p id="sync-status">Carregando...</p>
 </header>
 
 <div class="stats">
-  <div class="stat pendente"><div class="stat-num" id="statPending">0</div><div class="stat-label">Pendentes</div></div>
-  <div class="stat concluida"><div class="stat-num" id="statDone">0</div><div class="stat-label">Concluídas</div></div>
-  <div class="stat urgente"><div class="stat-num" id="statUrgent">0</div><div class="stat-label">Urgentes</div></div>
+  <div class="stat stat-pend"><div class="stat-num" id="stat-pend">0</div><div class="stat-label">Pendentes</div></div>
+  <div class="stat stat-urgent"><div class="stat-num" id="stat-urgent">0</div><div class="stat-label">Urgentes 🔴</div></div>
+  <div class="stat stat-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Concluídas ✅</div></div>
 </div>
 
-<div class="add-form">
-  <input type="text" id="taskTitle" placeholder="Nova tarefa..." maxlength="100">
+<div class="form">
   <div class="form-row">
-    <select id="taskPerson">
-      <option value="">Quem vai fazer?</option>
+    <input type="text" id="inp-title" placeholder="Nova tarefa..." onkeydown="if(event.key==='Enter')addTask()">
+  </div>
+  <div class="form-row">
+    <select id="inp-person">
       <option value="Cauã">Cauã</option>
       <option value="Naty">Naty</option>
       <option value="Ruan">Ruan</option>
       <option value="Josiel">Josiel</option>
     </select>
-    <select id="taskPriority">
-      <option value="baixa">🟢 Baixa</option>
-      <option value="media" selected>🟡 Média</option>
-      <option value="alta">🔴 Alta</option>
+    <select id="inp-deadline">
+      <option value="0">🔴 Hoje (Alta)</option>
+      <option value="2">🟡 2 dias (Média)</option>
+      <option value="3">🟢 3 dias (Baixa)</option>
+      <option value="7">📅 1 semana</option>
     </select>
   </div>
   <div class="form-row">
-    <select id="taskFreq">
-      <option value="Única">Única</option>
+    <select id="inp-freq">
+      <option value="Única">Tarefa única</option>
       <option value="Diária">Diária</option>
-      <option value="A cada 3 dias">A cada 3 dias</option>
       <option value="Semanal">Semanal</option>
+      <option value="A cada 3 dias">A cada 3 dias</option>
     </select>
-    <select id="taskDay">
-      <option value="">Dia (opcional)</option>
-      <option value="Segunda">Segunda</option>
-      <option value="Terça">Terça</option>
-      <option value="Quarta">Quarta</option>
-      <option value="Quinta">Quinta</option>
-      <option value="Sexta">Sexta</option>
-      <option value="Sábado">Sábado</option>
-      <option value="Domingo">Domingo</option>
-    </select>
+    <label><input type="checkbox" id="inp-fixed"> 🔒 Fixa (sempre Alta)</label>
   </div>
-  <textarea id="taskDetails" placeholder="Detalhes (opcional)" rows="2" maxlength="300"></textarea>
+  <div class="form-row">
+    <textarea id="inp-details" placeholder="Detalhes (opcional)"></textarea>
+  </div>
   <button class="btn-add" onclick="addTask()">➕ Adicionar Tarefa</button>
 </div>
 
-<div class="filters">
-  <button class="filter-btn active" onclick="setFilter('all',this)">Todas</button>
-  <button class="filter-btn" onclick="setFilter('Cauã',this)">Cauã</button>
-  <button class="filter-btn" onclick="setFilter('Naty',this)">Naty</button>
-  <button class="filter-btn" onclick="setFilter('Ruan',this)">Ruan</button>
-  <button class="filter-btn" onclick="setFilter('Josiel',this)">Josiel</button>
-  <button class="filter-btn" onclick="setFilter('pending',this)">⚠️ Pendentes</button>
+<div class="filters" id="filters">
+  <button class="active" onclick="setFilter('all',this)">Todas</button>
+  <button onclick="setFilter('Cauã',this)">Cauã</button>
+  <button onclick="setFilter('Naty',this)">Naty</button>
+  <button onclick="setFilter('Ruan',this)">Ruan</button>
+  <button onclick="setFilter('Josiel',this)">Josiel</button>
+  <button onclick="setFilter('pending',this)">⚠️ Pendentes</button>
 </div>
 
-<div class="task-list" id="taskList">
-  <div class="loading"><span class="spin"></span>Carregando tarefas...</div>
+<div class="task-list" id="task-list">
+  <div class="loading">Carregando tarefas...</div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const SUPABASE_URL = 'https://trbyynbtuzpszdvjivbs.supabase.co';
+const SUPABASE_URL = 'https://trbyynbtuzpszdvjivbs.supabase.co/storage/v1/object/tarefas/tarefas.json';
+const SUPABASE_WRITE = 'https://trbyynbtuzpszdvjivbs.supabase.co/storage/v1/object/tarefas/tarefas.json';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyYnl5bmJ0dXpwc3pkdmppdmJzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODIyODAxOCwiZXhwIjoyMDkzODA0MDE4fQ.OZq8bycNQWEpdbxPiSuB9gt7A0fPKNkawcrtE5XpGFg';
-const STORAGE_PATH = '/storage/v1/object/tarefas/tarefas.json';
-const PUBLIC_PATH = '/storage/v1/object/public/tarefas/tarefas.json';
+
 let tasks = [];
 let currentFilter = 'all';
-let nextId = 1;
+let isLoading = false;
 
+// === PRIORITY CALCULATION ===
+function calcPriority(task) {
+  // Fixed tasks are always Alta
+  if (task.fixed) return 'alta';
+
+  // Calculate based on days remaining
+  const created = new Date(task.created);
+  const now = new Date();
+  const deadlineDays = task.deadlineDays !== undefined ? task.deadlineDays : 3;
+  const dueDate = new Date(created);
+  dueDate.setDate(dueDate.getDate() + deadlineDays);
+
+  const diffMs = dueDate - now;
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays <= 0) return 'urgente';  // Overdue!
+  if (diffDays <= 1) return 'alta';
+  if (diffDays <= 2) return 'media';
+  return 'baixa';
+}
+
+function getDaysRemaining(task) {
+  const created = new Date(task.created);
+  const now = new Date();
+  const deadlineDays = task.deadlineDays !== undefined ? task.deadlineDays : 3;
+  const dueDate = new Date(created);
+  dueDate.setDate(dueDate.getDate() + deadlineDays);
+  const diffMs = dueDate - now;
+  return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+}
+
+function getDueDate(task) {
+  const created = new Date(task.created);
+  const deadlineDays = task.deadlineDays !== undefined ? task.deadlineDays : 3;
+  const dueDate = new Date(created);
+  dueDate.setDate(dueDate.getDate() + deadlineDays);
+  return dueDate.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit'});
+}
+
+function priorityLabel(p) {
+  return {'urgente':'🔴 URGENTE','alta':'🔴 Alta','media':'🟡 Média','baixa':'🟢 Baixa'}[p] || '';
+}
+
+function priorityEmoji(p) {
+  return {'urgente':'🚨','alta':'🔴','media':'🟡','baixa':'🟢'}[p] || '⚪';
+}
+
+// === DATA SYNC ===
 async function loadTasks() {
+  if (isLoading) return;
+  isLoading = true;
   try {
-    const res = await fetch(SUPABASE_URL + PUBLIC_PATH + '?t=' + Date.now());
-    if (!res.ok) throw new Error('fetch failed');
-    const data = await res.json();
+    const resp = await fetch(SUPABASE_URL + '?t=' + Date.now());
+    if (!resp.ok) throw new Error('Fetch failed');
+    const data = await resp.json();
     tasks = data.tarefas || [];
-    nextId = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
-    render();
-    updateSync(true);
+    document.getElementById('sync-status').innerHTML = '<span class="sync-ok">✓ Sincronizado às ' + new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) + '</span>';
   } catch(e) {
-    document.getElementById('taskList').innerHTML = '<div class="empty"><div class="empty-emoji">⚠️</div>Erro ao carregar. Verifique a internet.</div>';
-    updateSync(false);
+    document.getElementById('sync-status').innerHTML = '<span class="sync-err">⚠ Erro ao sincronizar</span>';
   }
+  isLoading = false;
+  render();
 }
 
 async function saveTasks() {
   try {
-    const res = await fetch(SUPABASE_URL + STORAGE_PATH, {
+    const data = JSON.stringify({tarefas: tasks});
+    const resp = await fetch(SUPABASE_WRITE, {
       method: 'PUT',
       headers: {
         'Authorization': 'Bearer ' + SUPABASE_KEY,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({tarefas: tasks})
+      body: data
     });
-    if (!res.ok) throw new Error('save failed');
-    updateSync(true);
+    if (!resp.ok) throw new Error('Save failed');
     return true;
   } catch(e) {
-    showToast('Erro ao salvar. Tente novamente.', false);
-    updateSync(false);
+    showToast('Erro ao salvar', false);
     return false;
   }
 }
 
-function updateSync(ok) {
-  const el = document.getElementById('lastSync');
-  const now = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
-  el.innerHTML = ok ? '<span class="sync-ok">✓ Sincronizado</span> às ' + now : '⚠ Sem conexão';
-}
+// === TASK OPERATIONS ===
+async function addTask() {
+  const title = document.getElementById('inp-title').value.trim();
+  if (!title) { showToast('Digite a tarefa', false); return; }
 
-function addTask() {
-  const title = document.getElementById('taskTitle').value.trim();
-  const person = document.getElementById('taskPerson').value;
-  const priority = document.getElementById('taskPriority').value;
-  const freq = document.getElementById('taskFreq').value;
-  const day = document.getElementById('taskDay').value;
-  const details = document.getElementById('taskDetails').value.trim();
+  const person = document.getElementById('inp-person').value;
+  const deadlineDays = parseInt(document.getElementById('inp-deadline').value);
+  const freq = document.getElementById('inp-freq').value;
+  const fixed = document.getElementById('inp-fixed').checked;
+  const details = document.getElementById('inp-details').value.trim();
 
-  if (!title) { showToast('Digite a tarefa!', false); return; }
-  if (!person) { showToast('Escolha quem vai fazer!', false); return; }
-
-  const fullTitle = day ? title + ' — ' + day : title;
+  const now = new Date();
   const task = {
-    id: nextId++,
-    title: fullTitle,
+    id: Date.now(),
+    title: title,
     person: person,
-    priority: priority,
+    details: details,
     freq: freq,
     done: false,
-    details: details,
-    created: new Date().toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
+    fixed: fixed,
+    deadlineDays: fixed ? 0 : deadlineDays,
+    created: now.toISOString()
   };
+
   tasks.unshift(task);
+  await saveTasks();
+
+  // Reset form
+  document.getElementById('inp-title').value = '';
+  document.getElementById('inp-details').value = '';
+  document.getElementById('inp-fixed').checked = false;
+
+  showToast('Tarefa adicionada!', true);
   render();
-  saveTasks();
-  showToast('Tarefa adicionada! ✅', true);
-
-  document.getElementById('taskTitle').value = '';
-  document.getElementById('taskDetails').value = '';
-  document.getElementById('taskDay').value = '';
-  document.getElementById('taskPerson').value = '';
-  document.getElementById('taskPriority').value = 'media';
-  document.getElementById('taskFreq').value = 'Única';
 }
 
-function toggleTask(id) {
-  const t = tasks.find(x => x.id === id);
-  if (t) {
-    t.done = !t.done;
-    render();
-    saveTasks();
-    if (t.done) showToast('Tarefa concluída! ✅', true);
-  }
-}
-
-function deleteTask(id) {
-  tasks = tasks.filter(x => x.id !== id);
+async function toggleTask(id) {
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+  t.done = !t.done;
+  if (t.done) t.completedAt = new Date().toISOString();
+  await saveTasks();
   render();
-  saveTasks();
-  showToast('Tarefa removida 🗑', true);
 }
 
-function setFilter(filter, btn) {
-  currentFilter = filter;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+async function deleteTask(id) {
+  tasks = tasks.filter(t => t.id !== id);
+  await saveTasks();
+  showToast('Tarefa removida', true);
+  render();
+}
+
+// === RENDERING ===
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('#filters button').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   render();
 }
 
-function render() {
+function getFilteredTasks() {
   let filtered = tasks;
   if (currentFilter === 'pending') {
     filtered = tasks.filter(t => !t.done);
   } else if (currentFilter !== 'all') {
     filtered = tasks.filter(t => t.person === currentFilter);
   }
+  // Sort: not done first, then by priority (urgente > alta > media > baixa)
+  const prioOrder = {'urgente':0,'alta':1,'media':2,'baixa':3};
+  return filtered.sort((a, b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    const pa = prioOrder[calcPriority(a)] ?? 4;
+    const pb = prioOrder[calcPriority(b)] ?? 4;
+    return pa - pb;
+  });
+}
 
-  const pending = tasks.filter(t => !t.done).length;
-  const done = tasks.filter(t => t.done).length;
-  const urgent = tasks.filter(t => !t.done && t.priority === 'alta').length;
-  document.getElementById('statPending').textContent = pending;
-  document.getElementById('statDone').textContent = done;
-  document.getElementById('statUrgent').textContent = urgent;
+function render() {
+  const list = document.getElementById('task-list');
+  const filtered = getFilteredTasks();
 
-  const list = document.getElementById('taskList');
+  // Stats
+  const pending = tasks.filter(t => !t.done);
+  const urgent = pending.filter(t => {
+    const p = calcPriority(t);
+    return p === 'urgente' || p === 'alta';
+  });
+  const done = tasks.filter(t => t.done);
+  document.getElementById('stat-pend').textContent = pending.length;
+  document.getElementById('stat-urgent').textContent = urgent.length;
+  document.getElementById('stat-done').textContent = done.length;
+
   if (filtered.length === 0) {
-    list.innerHTML = '<div class="empty"><div class="empty-emoji">🎉</div>Nenhuma tarefa aqui!</div>';
+    list.innerHTML = '<div class="empty">📭 Nenhuma tarefa aqui</div>';
     return;
   }
 
-  filtered.sort((a,b) => {
-    if (a.done !== b.done) return a.done ? 1 : -1;
-    const pri = {alta:0, media:1, baixa:2};
-    return (pri[a.priority]||1) - (pri[b.priority]||1);
-  });
+  list.innerHTML = filtered.map(t => {
+    const prio = calcPriority(t);
+    const daysLeft = getDaysRemaining(t);
+    const dueDate = getDueDate(t);
 
-  list.innerHTML = filtered.map(t => `
-    <div class="task priority-${t.priority} ${t.done?'done':''}">
-      <div class="task-check ${t.done?'checked':''}" onclick="toggleTask(${t.id})"></div>
+    let deadlineBadge = '';
+    if (!t.done && !t.fixed) {
+      if (daysLeft <= 0) {
+        deadlineBadge = `<span class="badge badge-urgente">🚨 ATRASADA</span>`;
+      } else if (daysLeft === 1) {
+        deadlineBadge = `<span class="badge badge-alta">⏰ Vence hoje!</span>`;
+      } else {
+        deadlineBadge = `<span class="badge badge-${prio}">📅 Vence ${dueDate} (${daysLeft}d)</span>`;
+      }
+    }
+
+    const fixedBadge = t.fixed ? `<span class="badge badge-fixed">🔒 Fixa</span>` : '';
+    const freqBadge = t.freq && t.freq !== 'Única' ? `<span class="badge badge-freq">🔄 ${esc(t.freq)}</span>` : '';
+
+    return `
+    <div class="task ${t.done ? 'done' : ''} task-prio-${prio}">
+      <div class="task-check ${t.done ? 'checked' : ''}" onclick="toggleTask(${t.id})">${t.done ? '✓' : ''}</div>
       <div class="task-body">
         <div class="task-title">${esc(t.title)}</div>
         ${t.details ? `<div class="task-details">${esc(t.details)}</div>` : ''}
-        <div class="task-meta">
+        <div class="task-badges">
           <span class="badge badge-person">👤 ${esc(t.person)}</span>
-          ${t.freq && t.freq !== 'Única' ? `<span class="badge badge-freq">🔄 ${esc(t.freq)}</span>` : ''}
+          <span class="badge badge-${prio}">${priorityLabel(prio)}</span>
+          ${fixedBadge}
+          ${freqBadge}
+          ${deadlineBadge}
         </div>
       </div>
       <button class="task-del" onclick="deleteTask(${t.id})">🗑</button>
     </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 function esc(s) {
@@ -288,7 +357,7 @@ function esc(s) {
 function showToast(msg, ok) {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
-  toast.style.background = ok ? 'var(--green)' : 'var(--accent)';
+  toast.style.background = ok ? 'var(--green)' : 'var(--red)';
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 2500);
 }
