@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tarefas — Cozinha Prensadão</title>
+<style>
+:root {
+  --bg: #1a1a2e;
+  --card: #16213e;
+  --accent: #e94560;
+  --accent2: #0f3460;
+  --green: #4ecca3;
+  --yellow: #f5b041;
+  --text: #eee;
+  --text-dim: #aaa;
+  --border: #2a2a4a;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 12px;
+}
+header {
+  text-align: center;
+  padding: 16px 8px 8px;
+}
+header h1 {
+  font-size: 1.4rem;
+  color: var(--accent);
+}
+header p {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+/* Add task form */
+.add-form {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 14px;
+  margin: 12px auto;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--border);
+}
+.add-form input, .add-form select, .add-form textarea {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  color: var(--text);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border 0.2s;
+}
+.add-form input:focus, .add-form select:focus, .add-form textarea:focus {
+  border-color: var(--accent);
+}
+.add-form textarea {
+  resize: vertical;
+  min-height: 40px;
+}
+.form-row {
+  display: flex;
+  gap: 8px;
+}
+.form-row > * { flex:1; }
+.prio-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.prio-btn {
+  flex: 1;
+  padding: 8px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.8rem;
+  text-align: center;
+  transition: all 0.2s;
+}
+.prio-btn.active {
+  background: var(--accent2);
+  color: var(--text);
+  border-color: var(--accent);
+}
+.prio-btn[data-prio="alta"].active { border-color: var(--accent); background: rgba(233,69,96,0.2); }
+.prio-btn[data-prio="media"].active { border-color: var(--yellow); background: rgba(245,176,65,0.2); }
+.prio-btn[data-prio="baixa"].active { border-color: var(--green); background: rgba(78,204,163,0.2); }
+
+.btn-add {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-add:hover { opacity: 0.85; }
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 6px;
+  margin: 8px auto;
+  max-width: 640px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.filter-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-btn.active {
+  background: var(--accent2);
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+/* Task list */
+.task-list {
+  margin: 8px auto 24px;
+  max-width: 640px;
+}
+.task-card {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border-left: 4px solid var(--border);
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  transition: opacity 0.2s;
+}
+.task-card[data-prio="alta"] { border-left-color: var(--accent); }
+.task-card[data-prio="media"] { border-left-color: var(--yellow); }
+.task-card[data-prio="baixa"] { border-left-color: var(--green); }
+.task-card.done { opacity: 0.5; }
+.task-card.done .task-title { text-decoration: line-through; }
+
+.task-check {
+  width: 22px; height: 22px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--green);
+  transition: all 0.2s;
+}
+.task-check:hover { border-color: var(--green); }
+.task-check.checked {
+  background: var(--green);
+  border-color: var(--green);
+  color: #1a1a2e;
+}
+
+.task-body { flex:1; }
+.task-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.task-desc {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+  white-space: pre-wrap;
+}
+.task-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.badge {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+.badge-person {
+  background: var(--accent2);
+  color: var(--text);
+}
+.badge-prio {
+  text-transform: capitalize;
+}
+.badge-prio.alta { background: rgba(233,69,96,0.25); color: var(--accent); }
+.badge-prio.media { background: rgba(245,176,65,0.25); color: var(--yellow); }
+.badge-prio.baixa { background: rgba(78,204,163,0.25); color: var(--green); }
+.badge-date {
+  color: var(--text-dim);
+  font-size: 0.7rem;
+}
+
+.task-del {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 2px 4px;
+  transition: color 0.2s;
+}
+.task-del:hover { color: var(--accent); }
+
+.empty {
+  text-align: center;
+  color: var(--text-dim);
+  padding: 40px 20px;
+  font-size: 0.9rem;
+}
+
+/* Stats bar */
+.stats {
+  display: flex;
+  gap: 6px;
+  margin: 8px auto;
+  max-width: 640px;
+}
+.stat-box {
+  flex:1;
+  background: var(--card);
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+.stat-num {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📋 Tarefas — Cozinha Prensadão</h1>
+  <p>Adiciona, atribui e acompanha as tarefas da equipe</p>
+</header>
+
+<!-- Stats -->
+<div class="stats" id="stats"></div>
+
+<!-- Add Form -->
+<div class="add-form">
+  <input type="text" id="taskTitle" placeholder="Nova tarefa..." maxlength="120">
+  <textarea id="taskDesc" placeholder="Detalhes (opcional)" maxlength="500"></textarea>
+  <div class="form-row">
+    <select id="taskPerson">
+      <option value="">Quem vai fazer?</option>
+      <option value="Cauã">Cauã</option>
+      <option value="Naty">Naty</option>
+      <option value="Ruan">Ruan</option>
+      <option value="Josiel">Josiel</option>
+    </select>
+    <select id="taskFreq">
+      <option value="única">Tarefa única</option>
+      <option value="diária">Recorrente diária</option>
+      <option value="semanal">Recorrente semanal</option>
+      <option value="a cada 3 dias">A cada 3 dias</option>
+    </select>
+  </div>
+  <div class="prio-row">
+    <div class="prio-btn active" data-prio="media">🟡 Média</div>
+    <div class="prio-btn" data-prio="alta">🔴 Alta</div>
+    <div class="prio-btn" data-prio="baixa">🟢 Baixa</div>
+  </div>
+  <button class="btn-add" onclick="addTask()">+ Adicionar Tarefa</button>
+</div>
+
+<!-- Filters -->
+<div class="filters" id="filters"></div>
+
+<!-- Task List -->
+<div class="task-list" id="taskList"></div>
+
+<script>
+const PEOPLE = ['Cauã','Naty','Ruan','Josiel'];
+const STORAGE_KEY = 'prensadao_tarefas';
+let currentFilter = 'todas';
+let currentPrio = 'media';
+
+// Priority buttons
+document.querySelectorAll('.prio-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.prio-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentPrio = btn.dataset.prio;
+  });
+});
+
+function loadTasks() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+function saveTasks(t) { localStorage.setItem(STORAGE_KEY, JSON.stringify(t)); }
+
+function addTask() {
+  const title = document.getElementById('taskTitle').value.trim();
+  const desc = document.getElementById('taskDesc').value.trim();
+  const person = document.getElementById('taskPerson').value;
+  const freq = document.getElementById('taskFreq').value;
+  if (!title) { alert('Digita a tarefa!'); return; }
+  if (!person) { alert('Escolhe quem vai fazer!'); return; }
+
+  const tasks = loadTasks();
+  tasks.unshift({
+    id: Date.now(),
+    title, desc, person, freq,
+    prio: currentPrio,
+    done: false,
+    created: new Date().toLocaleDateString('pt-BR')
+  });
+  saveTasks(tasks);
+  document.getElementById('taskTitle').value = '';
+  document.getElementById('taskDesc').value = '';
+  document.getElementById('taskPerson').value = '';
+  document.getElementById('taskFreq').value = 'única';
+  document.querySelectorAll('.prio-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.prio-btn[data-prio="media"]').classList.add('active');
+  currentPrio = 'media';
+  render();
+}
+
+function toggleDone(id) {
+  const tasks = loadTasks();
+  const t = tasks.find(x => x.id === id);
+  if (t) {
+    t.done = !t.done;
+    saveTasks(tasks);
+    render();
+  }
+}
+
+function deleteTask(id) {
+  let tasks = loadTasks();
+  tasks = tasks.filter(x => x.id !== id);
+  saveTasks(tasks);
+  render();
+}
+
+function renderFilters() {
+  const tasks = loadTasks();
+  const filters = ['todas', ...PEOPLE];
+  const counts = {};
+  filters.forEach(f => counts[f] = f === 'todas' ? tasks.length : tasks.filter(t => t.person === f).length);
+
+  document.getElementById('filters').innerHTML = filters.map(f =>
+    `<div class="filter-btn ${f === currentFilter ? 'active' : ''}" onclick="setFilter('${f}')">
+      ${f === 'todas' ? '👥 Todas' : f} <span style="opacity:0.6">(${counts[f]})</span>
+    </div>`
+  ).join('');
+}
+
+function setFilter(f) { currentFilter = f; render(); }
+
+function renderStats() {
+  const tasks = loadTasks();
+  const done = tasks.filter(t => t.done).length;
+  const pending = tasks.length - done;
+  const alta = tasks.filter(t => !t.done && t.prio === 'alta').length;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat-box"><div class="stat-num" style="color:var(--accent)">${pending}</div><div class="stat-label">Pendentes</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--green)">${done}</div><div class="stat-label">Concluídas</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--accent)">${alta}</div><div class="stat-label">Urgentes</div></div>
+  `;
+}
+
+function render() {
+  let tasks = loadTasks();
+  if (currentFilter !== 'todas') tasks = tasks.filter(t => t.person === currentFilter);
+
+  renderStats();
+  renderFilters();
+
+  if (tasks.length === 0) {
+    document.getElementById('taskList').innerHTML = `<div class="empty">Nenhuma tarefa aqui. Adiciona a primeira! 👆</div>`;
+    return;
+  }
+
+  // Sort: pending first, then by priority
+  const order = { alta: 0, media: 1, baixa: 2 };
+  tasks.sort((a, b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return order[a.prio] - order[b.prio];
+  });
+
+  document.getElementById('taskList').innerHTML = tasks.map(t => `
+    <div class="task-card ${t.done ? 'done' : ''}" data-prio="${t.prio}">
+      <div class="task-check ${t.done ? 'checked' : ''}" onclick="toggleDone(${t.id})">${t.done ? '✓' : ''}</div>
+      <div class="task-body">
+        <div class="task-title">${esc(t.title)}</div>
+        ${t.desc ? `<div class="task-desc">${esc(t.desc)}</div>` : ''}
+        <div class="task-meta">
+          <span class="badge badge-person">${esc(t.person)}</span>
+          <span class="badge badge-prio ${t.prio}">${t.prio}</span>
+          ${t.freq !== 'única' ? `<span class="badge badge-person">${esc(t.freq)}</span>` : ''}
+          <span class="badge-date">📅 ${esc(t.created)}</span>
+        </div>
+      </div>
+      <button class="task-del" onclick="deleteTask(${t.id})">🗑</button>
+    </div>
+  `).join('');
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+render();
+</script>
+</body>
+</html>
