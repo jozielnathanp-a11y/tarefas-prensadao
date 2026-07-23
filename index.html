@@ -8,208 +8,269 @@
 :root{--bg:#1a1a2e;--card:#16213e;--accent:#e94560;--accent2:#0f3460;--green:#4ecca3;--yellow:#f5b041;--text:#eee;--dim:#aaa;--border:#2a2a4a;--blue:#4a9eff}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:10px;max-width:600px;margin:0 auto}
-header{text-align:center;padding:14px 0 10px}
-header h1{font-size:1.4rem;background:linear-gradient(135deg,var(--accent),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-header p{color:var(--dim);font-size:.8rem;margin-top:2px}
-.stats{display:flex;gap:8px;margin-bottom:12px}
-.stat{flex:1;background:var(--card);border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border)}
-.stat-num{font-size:1.3rem;font-weight:700}
-.stat-lbl{font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
-.stat-pend{color:var(--yellow)}
-.stat-done{color:var(--green)}
-.stat-urgent{color:var(--accent)}
-.filters{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
-.filter-btn{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--dim);font-size:.8rem;cursor:pointer;transition:all .2s}
+header{text-align:center;padding:14px 0 8px}
+header h1{font-size:1.5rem;background:linear-gradient(135deg,var(--accent),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+header p{color:var(--dim);font-size:.8rem;margin-top:4px}
+.stats{display:flex;gap:8px;margin:10px 0}
+.stat{flex:1;background:var(--card);border-radius:10px;padding:8px 6px;text-align:center;border:1px solid var(--border)}
+.stat-num{font-size:1.4rem;font-weight:700}
+.stat-label{font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
+.stat.pendente .stat-num{color:var(--yellow)}
+.stat.concluida .stat-num{color:var(--green)}
+.stat.urgente .stat-num{color:var(--accent)}
+.add-form{background:var(--card);border-radius:12px;padding:12px;margin:10px 0;border:1px solid var(--border)}
+.add-form input,.add-form select,.add-form textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-size:.9rem;margin-bottom:8px}
+.add-form input::placeholder,.add-form textarea::placeholder{color:#666}
+.add-form select{cursor:pointer}
+.form-row{display:flex;gap:8px}
+.form-row>*{flex:1}
+.btn-add{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:8px;padding:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:transform .15s}
+.btn-add:hover{transform:scale(1.02)}
+.btn-add:active{transform:scale(.98)}
+.filters{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap}
+.filter-btn{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 14px;color:var(--dim);font-size:.8rem;cursor:pointer;transition:all .15s}
+.filter-btn:hover{border-color:var(--accent)}
 .filter-btn.active{background:var(--accent2);color:#fff;border-color:var(--accent)}
-.filter-btn:active{transform:scale(.95)}
-.add-bar{background:var(--card);border-radius:12px;padding:12px;margin-bottom:12px;border:1px solid var(--border)}
-.add-bar input,.add-bar select,.add-bar textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 10px;color:var(--text);font-size:.85rem;margin-bottom:7px;font-family:inherit}
-.add-bar input::placeholder,.add-bar textarea::placeholder{color:#666}
-.add-bar input:focus,.add-bar select:focus,.add-bar textarea:focus{outline:none;border-color:var(--accent)}
-.add-row{display:flex;gap:6px}
-.add-row select{flex:1;margin-bottom:0}
-.add-bar button{width:100%;padding:11px;border:none;border-radius:8px;background:linear-gradient(135deg,var(--accent),#c73e54);color:#fff;font-weight:600;font-size:.9rem;cursor:pointer;transition:all .2s}
-.add-bar button:active{transform:scale(.98)}
-.task{background:var(--card);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start;border-left:4px solid var(--border);transition:opacity .3s}
-.task.alta{border-left-color:var(--accent)}
-.task.media{border-left-color:var(--yellow)}
-.task.baixa{border-left-color:var(--green)}
+.task-list{display:flex;flex-direction:column;gap:8px}
+.task{background:var(--card);border-radius:12px;padding:12px;display:flex;align-items:flex-start;gap:10px;border-left:4px solid var(--border);transition:opacity .2s}
+.task.priority-alta{border-left-color:var(--accent)}
+.task.priority-media{border-left-color:var(--yellow)}
+.task.priority-baixa{border-left-color:var(--green)}
 .task.done{opacity:.5}
-.task.done .task-title{text-decoration:line-through;color:var(--dim)}
-.task-check{width:24px;height:24px;border-radius:6px;border:2px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s;margin-top:2px}
-.task-check.done{background:var(--green);border-color:var(--green)}
+.task.done .task-title{text-decoration:line-through}
+.task-check{width:24px;height:24px;border:2px solid var(--border);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;margin-top:2px}
+.task-check:hover{border-color:var(--green)}
+.task-check.checked{background:var(--green);border-color:var(--green)}
+.task-check.checked::after{content:'✓';color:#fff;font-weight:700;font-size:.9rem}
 .task-body{flex:1;min-width:0}
-.task-title{font-size:.9rem;font-weight:600;margin-bottom:2px}
-.task-details{font-size:.78rem;color:var(--dim);margin-bottom:4px;word-break:break-word}
-.task-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.badge{padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:600}
-.badge-person{background:var(--accent2);color:#bfdbfe}
-.badge-person.Cauã{background:#7c3aed33;color:#c4b5fd}
-.badge-person.Naty{background:#ec489933;color:#f9a8d4}
-.badge-person.Ruan{background:#3b82f633;color:#93c5fd}
-.badge-person.Josiel{background:#22c55e33;color:#86efac}
-.badge-freq{background:var(--border);color:var(--dim)}
-.badge-priority{font-size:.6rem}
-.badge-priority.alta{background:var(--accent)33;color:#fca5a5}
-.badge-priority.media{background:var(--yellow)33;color:#fde68a}
-.badge-priority.baixa{background:var(--green)33;color:#86efac}
-.task-del{background:none;border:none;color:var(--dim);cursor:pointer;font-size:16px;padding:4px;opacity:.5;transition:opacity .2s}
-.task-del:hover{opacity:1}
+.task-title{font-weight:600;font-size:.95rem}
+.task-details{font-size:.8rem;color:var(--dim);margin-top:2px}
+.task-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.badge{font-size:.65rem;padding:2px 8px;border-radius:10px;font-weight:600}
+.badge-person{background:var(--accent2);color:var(--blue)}
+.badge-freq{background:var(--bg);color:var(--dim);border:1px solid var(--border)}
+.task-del{background:none;border:none;color:#555;font-size:1.1rem;cursor:pointer;padding:4px;transition:color .15s;flex-shrink:0}
+.task-del:hover{color:var(--accent)}
 .empty{text-align:center;padding:40px 20px;color:var(--dim)}
-.empty-icon{font-size:2.5rem;margin-bottom:8px}
-.sync-status{text-align:center;font-size:.7rem;color:var(--dim);padding:8px}
-.sync-ok{color:var(--green)}
-.sync-err{color:var(--accent)}
-.loading{text-align:center;padding:30px;color:var(--dim)}
-.loading .spinner{display:inline-block;width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px}
+.empty-emoji{font-size:2.5rem;margin-bottom:8px}
+.loading{text-align:center;padding:20px;color:var(--dim)}
+.spin{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-right:6px;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:400px){.stat-lbl{font-size:.58rem}.stat-num{font-size:1.1rem}}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--green);color:#fff;padding:10px 20px;border-radius:10px;font-size:.85rem;font-weight:600;opacity:0;transition:all .3s;z-index:100}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.sync{font-size:.7rem;color:var(--dim);text-align:center;margin-top:6px}
+.sync-ok{color:var(--green)}
 </style>
 </head>
 <body>
 <header>
-<h1>📋 Tarefas Cozinha</h1>
-<p>Prensadão — Guarapuava</p>
+  <h1>📋 Tarefas — Cozinha</h1>
+  <p id="lastSync">Carregando...</p>
 </header>
 
 <div class="stats">
-<div class="stat"><div class="stat-num stat-pend" id="statPend">0</div><div class="stat-lbl">Pendentes</div></div>
-<div class="stat"><div class="stat-num stat-done" id="statDone">0</div><div class="stat-lbl">Concluídas</div></div>
-<div class="stat"><div class="stat-num stat-urgent" id="statUrgent">0</div><div class="stat-lbl">Urgentes</div></div>
+  <div class="stat pendente"><div class="stat-num" id="statPending">0</div><div class="stat-label">Pendentes</div></div>
+  <div class="stat concluida"><div class="stat-num" id="statDone">0</div><div class="stat-label">Concluídas</div></div>
+  <div class="stat urgente"><div class="stat-num" id="statUrgent">0</div><div class="stat-label">Urgentes</div></div>
+</div>
+
+<div class="add-form">
+  <input type="text" id="taskTitle" placeholder="Nova tarefa..." maxlength="100">
+  <div class="form-row">
+    <select id="taskPerson">
+      <option value="">Quem vai fazer?</option>
+      <option value="Cauã">Cauã</option>
+      <option value="Naty">Naty</option>
+      <option value="Ruan">Ruan</option>
+      <option value="Josiel">Josiel</option>
+    </select>
+    <select id="taskPriority">
+      <option value="baixa">🟢 Baixa</option>
+      <option value="media" selected>🟡 Média</option>
+      <option value="alta">🔴 Alta</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <select id="taskFreq">
+      <option value="Única">Única</option>
+      <option value="Diária">Diária</option>
+      <option value="A cada 3 dias">A cada 3 dias</option>
+      <option value="Semanal">Semanal</option>
+    </select>
+    <select id="taskDay">
+      <option value="">Dia (opcional)</option>
+      <option value="Segunda">Segunda</option>
+      <option value="Terça">Terça</option>
+      <option value="Quarta">Quarta</option>
+      <option value="Quinta">Quinta</option>
+      <option value="Sexta">Sexta</option>
+      <option value="Sábado">Sábado</option>
+      <option value="Domingo">Domingo</option>
+    </select>
+  </div>
+  <textarea id="taskDetails" placeholder="Detalhes (opcional)" rows="2" maxlength="300"></textarea>
+  <button class="btn-add" onclick="addTask()">➕ Adicionar Tarefa</button>
 </div>
 
 <div class="filters">
-<button class="filter-btn active" onclick="setFilter('all')">Todas</button>
-<button class="filter-btn" onclick="setFilter('Cauã')">Cauã</button>
-<button class="filter-btn" onclick="setFilter('Naty')">Naty</button>
-<button class="filter-btn" onclick="setFilter('Ruan')">Ruan</button>
-<button class="filter-btn" onclick="setFilter('Josiel')">Josiel</button>
+  <button class="filter-btn active" onclick="setFilter('all',this)">Todas</button>
+  <button class="filter-btn" onclick="setFilter('Cauã',this)">Cauã</button>
+  <button class="filter-btn" onclick="setFilter('Naty',this)">Naty</button>
+  <button class="filter-btn" onclick="setFilter('Ruan',this)">Ruan</button>
+  <button class="filter-btn" onclick="setFilter('Josiel',this)">Josiel</button>
+  <button class="filter-btn" onclick="setFilter('pending',this)">⚠️ Pendentes</button>
 </div>
 
-<div class="add-bar">
-<input type="text" id="titleInput" placeholder="Nova tarefa..." onkeydown="if(event.key==='Enter')addTask()">
-<div class="add-row">
-<select id="personSelect"><option value="Cauã">Cauã</option><option value="Naty">Naty</option><option value="Ruan">Ruan</option><option value="Josiel">Josiel</option></select>
-<select id="prioritySelect"><option value="alta">🔴 Alta</option><option value="media" selected>🟡 Média</option><option value="baixa">🟢 Baixa</option></select>
-</div>
-<select id="freqSelect" style="margin-bottom:7px"><option value="Única">Única</option><option value="Diária">Diária</option><option value="Semanal">Semanal</option><option value="A cada 3 dias">A cada 3 dias</option></select>
-<textarea id="detailsInput" placeholder="Detalhes (opcional)" rows="2"></textarea>
-<button onclick="addTask()">➕ Adicionar Tarefa</button>
+<div class="task-list" id="taskList">
+  <div class="loading"><span class="spin"></span>Carregando tarefas...</div>
 </div>
 
-<div id="taskList"><div class="loading"><div class="spinner"></div><br>Carregando tarefas...</div></div>
-
-<div class="sync-status" id="syncStatus">⏳ Conectando...</div>
+<div class="toast" id="toast"></div>
 
 <script>
-const API_URL = "https://trbyynbtuzpszdvjivbs.supabase.co/storage/v1/object/public/tarefas/tarefas.json";
-const STORAGE_UPLOAD_URL = "https://trbyynbtuzpszdvjivbs.supabase.co/storage/v1/object/tarefas/tarefas.json";
-const STORAGE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyYnl5bmJ0dXpwc3pkdmppdmJzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODIyODAxOCwiZXhwIjoyMDkzODA0MDE4fQ.OZq8bycNQWEpdbxPiSuB9gt7A0fPKNkawcrtE5XpGFg";
-
+const SUPABASE_URL = 'https://trbyynbtuzpszdvjivbs.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyYnl5bmJ0dXpwc3pkdmppdmJzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODIyODAxOCwiZXhwIjoyMDkzODA0MDE4fQ.OZq8bycNQWEpdbxPiSuB9gt7A0fPKNkawcrtE5XpGFg';
+const STORAGE_PATH = '/storage/v1/object/tarefas/tarefas.json';
+const PUBLIC_PATH = '/storage/v1/object/public/tarefas/tarefas.json';
 let tasks = [];
-let filter = 'all';
-let saveTimer = null;
+let currentFilter = 'all';
+let nextId = 1;
 
 async function loadTasks() {
   try {
-    const res = await fetch(API_URL + "?t=" + Date.now());
+    const res = await fetch(SUPABASE_URL + PUBLIC_PATH + '?t=' + Date.now());
+    if (!res.ok) throw new Error('fetch failed');
     const data = await res.json();
     tasks = data.tarefas || [];
-    setSync("✅ Sincronizado", true);
+    nextId = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
     render();
+    updateSync(true);
   } catch(e) {
-    setSync("⚠️ Erro ao carregar", false);
-    // Fallback to localStorage
-    const local = localStorage.getItem("tarefas_prensadao");
-    if (local) { tasks = JSON.parse(local).tarefas || []; render(); }
+    document.getElementById('taskList').innerHTML = '<div class="empty"><div class="empty-emoji">⚠️</div>Erro ao carregar. Verifique a internet.</div>';
+    updateSync(false);
   }
 }
 
 async function saveTasks() {
-  // Save to localStorage as backup
-  localStorage.setItem("tarefas_prensadao", JSON.stringify({tarefas: tasks}));
-  // Save to Supabase
   try {
-    const res = await fetch(STORAGE_UPLOAD_URL, {
-      method: "POST",
-      headers: { "Authorization": "Bearer " + STORAGE_KEY, "Content-Type": "application/json" },
+    const res = await fetch(SUPABASE_URL + STORAGE_PATH, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({tarefas: tasks})
     });
-    if (res.ok) setSync("✅ Sincronizado", true);
-    else setSync("⚠️ Erro ao salvar", false);
+    if (!res.ok) throw new Error('save failed');
+    updateSync(true);
+    return true;
   } catch(e) {
-    setSync("⚠️ Erro de conexão", false);
+    showToast('Erro ao salvar. Tente novamente.', false);
+    updateSync(false);
+    return false;
   }
 }
 
-function setSync(msg, ok) {
-  const el = document.getElementById('syncStatus');
-  el.textContent = msg;
-  el.className = 'sync-status ' + (ok ? 'sync-ok' : 'sync-err');
-}
-
-function setFilter(f) {
-  filter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-  render();
+function updateSync(ok) {
+  const el = document.getElementById('lastSync');
+  const now = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+  el.innerHTML = ok ? '<span class="sync-ok">✓ Sincronizado</span> às ' + now : '⚠ Sem conexão';
 }
 
 function addTask() {
-  const title = document.getElementById('titleInput').value.trim();
-  if (!title) return;
-  const person = document.getElementById('personSelect').value;
-  const priority = document.getElementById('prioritySelect').value;
-  const freq = document.getElementById('freqSelect').value;
-  const details = document.getElementById('detailsInput').value.trim();
-  tasks.push({ id: Date.now(), title, person, priority, freq, done: false, details });
-  document.getElementById('titleInput').value = '';
-  document.getElementById('detailsInput').value = '';
+  const title = document.getElementById('taskTitle').value.trim();
+  const person = document.getElementById('taskPerson').value;
+  const priority = document.getElementById('taskPriority').value;
+  const freq = document.getElementById('taskFreq').value;
+  const day = document.getElementById('taskDay').value;
+  const details = document.getElementById('taskDetails').value.trim();
+
+  if (!title) { showToast('Digite a tarefa!', false); return; }
+  if (!person) { showToast('Escolha quem vai fazer!', false); return; }
+
+  const fullTitle = day ? title + ' — ' + day : title;
+  const task = {
+    id: nextId++,
+    title: fullTitle,
+    person: person,
+    priority: priority,
+    freq: freq,
+    done: false,
+    details: details,
+    created: new Date().toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
+  };
+  tasks.unshift(task);
   render();
   saveTasks();
+  showToast('Tarefa adicionada! ✅', true);
+
+  document.getElementById('taskTitle').value = '';
+  document.getElementById('taskDetails').value = '';
+  document.getElementById('taskDay').value = '';
+  document.getElementById('taskPerson').value = '';
+  document.getElementById('taskPriority').value = 'media';
+  document.getElementById('taskFreq').value = 'Única';
 }
 
 function toggleTask(id) {
-  const t = tasks.find(t => t.id === id);
-  if (t) { t.done = !t.done; render(); saveTasks(); }
+  const t = tasks.find(x => x.id === id);
+  if (t) {
+    t.done = !t.done;
+    render();
+    saveTasks();
+    if (t.done) showToast('Tarefa concluída! ✅', true);
+  }
 }
 
 function deleteTask(id) {
-  if (!confirm("Excluir esta tarefa?")) return;
-  tasks = tasks.filter(t => t.id !== id);
+  tasks = tasks.filter(x => x.id !== id);
   render();
   saveTasks();
+  showToast('Tarefa removida 🗑', true);
+}
+
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
 }
 
 function render() {
-  const filtered = filter === 'all' ? tasks : tasks.filter(t => t.person === filter);
-  const pending = tasks.filter(t => !t.done);
-  const done = tasks.filter(t => t.done);
-  const urgent = tasks.filter(t => !t.done && t.priority === 'alta');
-  document.getElementById('statPend').textContent = pending.length;
-  document.getElementById('statDone').textContent = done.length;
-  document.getElementById('statUrgent').textContent = urgent.length;
+  let filtered = tasks;
+  if (currentFilter === 'pending') {
+    filtered = tasks.filter(t => !t.done);
+  } else if (currentFilter !== 'all') {
+    filtered = tasks.filter(t => t.person === currentFilter);
+  }
 
+  const pending = tasks.filter(t => !t.done).length;
+  const done = tasks.filter(t => t.done).length;
+  const urgent = tasks.filter(t => !t.done && t.priority === 'alta').length;
+  document.getElementById('statPending').textContent = pending;
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statUrgent').textContent = urgent;
+
+  const list = document.getElementById('taskList');
   if (filtered.length === 0) {
-    document.getElementById('taskList').innerHTML = '<div class="empty"><div class="empty-icon">🎉</div>Nenhuma tarefa aqui. Tudo em dia!</div>';
+    list.innerHTML = '<div class="empty"><div class="empty-emoji">🎉</div>Nenhuma tarefa aqui!</div>';
     return;
   }
 
-  const sorted = [...filtered].sort((a,b) => {
+  filtered.sort((a,b) => {
     if (a.done !== b.done) return a.done ? 1 : -1;
     const pri = {alta:0, media:1, baixa:2};
-    return pri[a.priority] - pri[b.priority];
+    return (pri[a.priority]||1) - (pri[b.priority]||1);
   });
 
-  document.getElementById('taskList').innerHTML = sorted.map(t => `
-    <div class="task ${t.priority} ${t.done?'done':''}">
-      <div class="task-check ${t.done?'done':''}" onclick="toggleTask(${t.id})">${t.done?'✓':''}</div>
+  list.innerHTML = filtered.map(t => `
+    <div class="task priority-${t.priority} ${t.done?'done':''}">
+      <div class="task-check ${t.done?'checked':''}" onclick="toggleTask(${t.id})"></div>
       <div class="task-body">
         <div class="task-title">${esc(t.title)}</div>
         ${t.details ? `<div class="task-details">${esc(t.details)}</div>` : ''}
         <div class="task-meta">
-          <span class="badge badge-person ${t.person}">${esc(t.person)}</span>
-          <span class="badge badge-priority ${t.priority}">${t.priority.toUpperCase()}</span>
+          <span class="badge badge-person">👤 ${esc(t.person)}</span>
           ${t.freq && t.freq !== 'Única' ? `<span class="badge badge-freq">🔄 ${esc(t.freq)}</span>` : ''}
         </div>
       </div>
@@ -222,6 +283,14 @@ function esc(s) {
   const d = document.createElement('div');
   d.textContent = s;
   return d.innerHTML;
+}
+
+function showToast(msg, ok) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.style.background = ok ? 'var(--green)' : 'var(--accent)';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
 // Auto-refresh every 30 seconds
