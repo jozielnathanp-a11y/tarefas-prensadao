@@ -77,13 +77,7 @@ header p{color:var(--dim);font-size:.8rem;margin-top:4px}
     <input type="text" id="inp-title" placeholder="Nova tarefa..." onkeydown="if(event.key==='Enter')addTask()">
   </div>
   <div class="form-row">
-    <select id="inp-person">
-      <option value="Cauã">Cauã</option>
-      <option value="Naty">Naty</option>
-      <option value="Ruan">Ruan</option>
-      <option value="Josiel">Josiel</option>
-      <option value="Equipe">Equipe</option>
-    </select>
+    <div style="flex:1;color:var(--dim);font-size:.82rem;padding:8px 0">👥 Tarefa da equipe — quem fizer informa o nome ao concluir</div>
     <select id="inp-deadline">
       <option value="0">🔴 Hoje (Alta)</option>
       <option value="2">🟡 2 dias (Média)</option>
@@ -108,12 +102,8 @@ header p{color:var(--dim);font-size:.8rem;margin-top:4px}
 
 <div class="filters" id="filters">
   <button class="active" onclick="setFilter('all',this)">Todas</button>
-  <button onclick="setFilter('Cauã',this)">Cauã</button>
-  <button onclick="setFilter('Naty',this)">Naty</button>
-  <button onclick="setFilter('Ruan',this)">Ruan</button>
-  <button onclick="setFilter('Josiel',this)">Josiel</button>
-  <button onclick="setFilter('Equipe',this)">Equipe</button>
   <button onclick="setFilter('pending',this)">⚠️ Pendentes</button>
+  <button onclick="setFilter('done',this)">✅ Concluídas</button>
 </div>
 
 <div class="task-list" id="task-list">
@@ -194,6 +184,7 @@ async function loadTasks() {
       if (t.freq === 'Diária' && t.done && t.completedAt && new Date(t.completedAt).toLocaleDateString('pt-BR') !== hoje) {
         t.done = false;
         delete t.completedAt;
+        delete t.completedBy;
         t.created = new Date().toISOString();
         resetouDiarias = true;
       }
@@ -231,7 +222,7 @@ async function addTask() {
   const title = document.getElementById('inp-title').value.trim();
   if (!title) { showToast('Digite a tarefa', false); return; }
 
-  const person = document.getElementById('inp-person').value;
+  const person = 'Equipe';
   const deadlineDays = parseInt(document.getElementById('inp-deadline').value);
   const freq = document.getElementById('inp-freq').value;
   const fixed = document.getElementById('inp-fixed').checked;
@@ -265,8 +256,17 @@ async function addTask() {
 async function toggleTask(id) {
   const t = tasks.find(t => t.id === id);
   if (!t) return;
-  t.done = !t.done;
-  if (t.done) t.completedAt = new Date().toISOString();
+  if (!t.done) {
+    const quem = prompt('Quem fez esta tarefa? Informe o nome:');
+    if (!quem || !quem.trim()) return;
+    t.done = true;
+    t.completedBy = quem.trim();
+    t.completedAt = new Date().toISOString();
+  } else {
+    t.done = false;
+    delete t.completedBy;
+    delete t.completedAt;
+  }
   await saveTasks();
   render();
 }
@@ -290,6 +290,8 @@ function getFilteredTasks() {
   let filtered = tasks;
   if (currentFilter === 'pending') {
     filtered = tasks.filter(t => !t.done);
+  } else if (currentFilter === 'done') {
+    filtered = tasks.filter(t => t.done);
   } else if (currentFilter !== 'all') {
     filtered = tasks.filter(t => t.person === currentFilter);
   }
@@ -349,7 +351,8 @@ function render() {
         <div class="task-title">${esc(t.title)}</div>
         ${t.details ? `<div class="task-details">${esc(t.details)}</div>` : ''}
         <div class="task-badges">
-          <span class="badge badge-person">👤 ${esc(t.person)}</span>
+          <span class="badge badge-person">👥 Equipe</span>
+          ${t.completedBy ? `<span class="badge badge-fixed">✅ Feita por: ${esc(t.completedBy)}</span>` : ''}
           <span class="badge badge-${prio}">${priorityLabel(prio)}</span>
           ${fixedBadge}
           ${freqBadge}
