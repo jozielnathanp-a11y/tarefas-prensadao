@@ -136,6 +136,11 @@ let tasks = [];
 let currentFilter = 'all';
 let isLoading = false;
 
+// As tarefas diárias funcionam de segunda a sábado. Domingo é folga.
+function isDailyDueToday(task) {
+  return !(task.freq === 'Diária' && new Date().getDay() === 0);
+}
+
 // === PRIORITY CALCULATION ===
 function calcPriority(task) {
   // Fixed tasks are always Alta
@@ -196,7 +201,7 @@ async function loadTasks() {
     const hoje = new Date().toLocaleDateString('pt-BR');
     let resetouDiarias = false;
     tasks.forEach(t => {
-      if (t.freq === 'Diária' && t.done && t.completedAt && new Date(t.completedAt).toLocaleDateString('pt-BR') !== hoje) {
+      if (t.freq === 'Diária' && new Date().getDay() !== 0 && t.done && t.completedAt && new Date(t.completedAt).toLocaleDateString('pt-BR') !== hoje) {
         t.done = false;
         delete t.completedAt;
         delete t.completedBy;
@@ -303,13 +308,13 @@ function setFilter(f, btn) {
 }
 
 function getFilteredTasks() {
-  let filtered = tasks;
+  let filtered = tasks.filter(isDailyDueToday);
   if (currentFilter === 'pending') {
-    filtered = tasks.filter(t => !t.done);
+    filtered = filtered.filter(t => !t.done);
   } else if (currentFilter === 'done') {
-    filtered = tasks.filter(t => t.done);
+    filtered = filtered.filter(t => t.done);
   } else if (currentFilter !== 'all') {
-    filtered = tasks.filter(t => t.person === currentFilter);
+    filtered = filtered.filter(t => t.person === currentFilter);
   }
   // Sort: not done first, then by priority (urgente > alta > media > baixa)
   const prioOrder = {'urgente':0,'alta':1,'media':2,'baixa':3};
@@ -326,12 +331,13 @@ function render() {
   const filtered = getFilteredTasks();
 
   // Stats
-  const pending = tasks.filter(t => !t.done);
+  const dueTasks = tasks.filter(isDailyDueToday);
+  const pending = dueTasks.filter(t => !t.done);
   const urgent = pending.filter(t => {
     const p = calcPriority(t);
     return p === 'urgente' || p === 'alta';
   });
-  const done = tasks.filter(t => t.done);
+  const done = dueTasks.filter(t => t.done);
   document.getElementById('stat-pend').textContent = pending.length;
   document.getElementById('stat-urgent').textContent = urgent.length;
   document.getElementById('stat-done').textContent = done.length;
