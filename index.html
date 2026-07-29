@@ -5,12 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tarefas — Cozinha Prensadão</title>
 <style>
-:root{--bg:#1a1a2e;--card:#16213e;--accent:#e94560;--accent2:#0f3460;--green:#4ecca3;--yellow:#f5b041;--text:#eee;--dim:#aaa;--border:#2a2a4a;--blue:#4a9eff;--red:#ff4757}
+:root{--bg:#090909;--card:#151515;--accent:#ffb000;--accent2:#242424;--green:#28d17c;--yellow:#ffc400;--text:#fff;--dim:#b8b8b8;--border:#333;--blue:#46a9ff;--red:#ff3b30}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:10px;max-width:600px;margin:0 auto}
-header{text-align:center;padding:14px 0 8px}
-header h1{font-size:1.5rem}
+body{font-family:'Arial Black','Segoe UI',system-ui,sans-serif;background:radial-gradient(circle at top,#252525 0,#090909 45%);color:var(--text);min-height:100vh;padding:10px;max-width:600px;margin:0 auto}
+header{text-align:center;padding:14px 0 8px;border-bottom:2px solid var(--accent);margin-bottom:10px}
+header h1{font-size:1.5rem;text-transform:uppercase;letter-spacing:1px;color:var(--accent)}
 header p{color:var(--dim);font-size:.8rem;margin-top:4px}
+.street-tag{display:inline-block;margin-top:8px;background:var(--accent);color:#111;padding:4px 10px;border-radius:4px;font-size:.7rem;font-weight:900;transform:skew(-8deg)}
+.form,.stat,.task{box-shadow:4px 4px 0 #000}
 .sync-ok{color:var(--green)} .sync-err{color:var(--red)}
 .stats{display:flex;gap:8px;margin:10px 0}
 .stat{flex:1;background:var(--card);border-radius:10px;padding:8px;text-align:center;border:1px solid var(--border)}
@@ -63,7 +65,8 @@ header p{color:var(--dim);font-size:.8rem;margin-top:4px}
 </head>
 <body>
 <header>
-  <h1>📋 Tarefas — Cozinha</h1>
+  <h1>🔥 TAREFAS — PRENSADÃO</h1>
+  <div class="street-tag">NA RUA, É RESPONSABILIDADE</div>
   <p id="sync-status">Carregando...</p>
 </header>
 
@@ -75,7 +78,7 @@ header p{color:var(--dim);font-size:.8rem;margin-top:4px}
 
 <div class="form">
   <div class="form-row">
-    <input type="text" id="inp-title" placeholder="Nova tarefa..." onkeydown="if(event.key==='Enter')addTask()">
+    <input type="text" id="inp-title" placeholder="Manda a missão..." onkeydown="if(event.key==='Enter')addTask()">
   </div>
   <div class="form-row">
     <div style="flex:1;color:var(--dim);font-size:.82rem;padding:8px 0">👥 Tarefa da equipe — quem fizer informa o nome ao concluir</div>
@@ -98,7 +101,7 @@ header p{color:var(--dim);font-size:.8rem;margin-top:4px}
   <div class="form-row">
     <textarea id="inp-details" placeholder="Detalhes (opcional)"></textarea>
   </div>
-  <button class="btn-add" onclick="addTask()">➕ Adicionar Tarefa</button>
+  <button class="btn-add" onclick="addTask()">🔥 JOGAR TAREFA NO SISTEMA</button>
 </div>
 
 <div class="filters" id="filters">
@@ -113,8 +116,8 @@ header p{color:var(--dim);font-size:.8rem;margin-top:4px}
 
 <div class="modal" id="who-modal" onclick="if(event.target===this) closeWhoModal()">
   <div class="modal-box">
-    <h3>Quem fez esta tarefa?</h3>
-    <p>Selecione o nome de quem concluiu.</p>
+    <h3>🔥 Quem fechou essa missão?</h3>
+    <p>Seleciona o nome de quem fez e deixa registrado.</p>
     <select id="who-select">
       <option value="">Selecione o nome</option>
       <option value="Cauã">Cauã</option>
@@ -357,7 +360,7 @@ function render() {
   document.getElementById('stat-done').textContent = done.length;
 
   if (filtered.length === 0) {
-    list.innerHTML = '<div class="empty">📭 Nenhuma tarefa aqui</div>';
+    list.innerHTML = '<div class="empty">📭 Tá suave por aqui. Nenhuma missão pendente.</div>';
     return;
   }
 
