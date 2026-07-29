@@ -56,6 +56,7 @@ header p{color:var(--dim);font-size:.8rem;margin-top:4px}
 .task-del:hover{color:var(--red)}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--green);color:#fff;padding:10px 20px;border-radius:10px;font-size:.9rem;transition:.3s;z-index:999;opacity:0}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:20;padding:20px}.modal.show{display:flex}.modal-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;width:100%;max-width:360px}.modal-box h3{margin-bottom:8px}.modal-box p{color:var(--dim);font-size:.85rem;margin-bottom:14px}.modal-box select{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:11px;font-size:1rem;margin-bottom:14px}.modal-actions{display:flex;gap:8px}.modal-actions button{flex:1;border:0;border-radius:8px;padding:10px;font-weight:bold;cursor:pointer}.btn-confirm{background:var(--green);color:#111}.btn-cancel{background:var(--border);color:var(--text)}
 .empty{text-align:center;color:var(--dim);padding:40px 20px;font-size:.9rem}
 .loading{text-align:center;padding:20px;color:var(--dim)}
 </style>
@@ -110,6 +111,20 @@ header p{color:var(--dim);font-size:.8rem;margin-top:4px}
   <div class="loading">Carregando tarefas...</div>
 </div>
 
+<div class="modal" id="who-modal" onclick="if(event.target===this) closeWhoModal()">
+  <div class="modal-box">
+    <h3>Quem fez esta tarefa?</h3>
+    <p>Selecione o nome de quem concluiu.</p>
+    <select id="who-select">
+      <option value="">Selecione o nome</option>
+      <option value="Cauã">Cauã</option>
+      <option value="Naty">Naty</option>
+      <option value="Ruan">Ruan</option>
+      <option value="Josiel">Josiel</option>
+    </select>
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeWhoModal()">Cancelar</button><button class="btn-confirm" onclick="confirmWho()">Confirmar</button></div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -253,22 +268,23 @@ async function addTask() {
   render();
 }
 
+let taskBeingCompleted = null;
+function closeWhoModal() { taskBeingCompleted = null; document.getElementById('who-modal').classList.remove('show'); document.getElementById('who-select').value = ''; }
+function askWho(id) { taskBeingCompleted = id; document.getElementById('who-modal').classList.add('show'); }
+async function confirmWho() {
+  const quem = document.getElementById('who-select').value;
+  if (!quem || taskBeingCompleted === null) return;
+  const t = tasks.find(t => t.id === taskBeingCompleted);
+  if (!t) return closeWhoModal();
+  t.done = true; t.completedBy = quem; t.completedAt = new Date().toISOString();
+  closeWhoModal(); await saveTasks(); render();
+}
 async function toggleTask(id) {
   const t = tasks.find(t => t.id === id);
   if (!t) return;
-  if (!t.done) {
-    const quem = prompt('Quem fez esta tarefa? Informe o nome:');
-    if (!quem || !quem.trim()) return;
-    t.done = true;
-    t.completedBy = quem.trim();
-    t.completedAt = new Date().toISOString();
-  } else {
-    t.done = false;
-    delete t.completedBy;
-    delete t.completedAt;
-  }
-  await saveTasks();
-  render();
+  if (!t.done) return askWho(id);
+  t.done = false; delete t.completedBy; delete t.completedAt;
+  await saveTasks(); render();
 }
 
 async function deleteTask(id) {
