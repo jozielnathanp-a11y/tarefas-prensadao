@@ -82,6 +82,7 @@ header p{color:var(--dim);font-size:.8rem;margin-top:4px}
       <option value="Naty">Naty</option>
       <option value="Ruan">Ruan</option>
       <option value="Josiel">Josiel</option>
+      <option value="Equipe">Equipe</option>
     </select>
     <select id="inp-deadline">
       <option value="0">🔴 Hoje (Alta)</option>
@@ -111,6 +112,7 @@ header p{color:var(--dim);font-size:.8rem;margin-top:4px}
   <button onclick="setFilter('Naty',this)">Naty</button>
   <button onclick="setFilter('Ruan',this)">Ruan</button>
   <button onclick="setFilter('Josiel',this)">Josiel</button>
+  <button onclick="setFilter('Equipe',this)">Equipe</button>
   <button onclick="setFilter('pending',this)">⚠️ Pendentes</button>
 </div>
 
@@ -185,6 +187,18 @@ async function loadTasks() {
     if (!resp.ok) throw new Error('Fetch failed');
     const data = await resp.json();
     tasks = data.tarefas || [];
+    // Tarefas diárias voltam a ficar pendentes automaticamente no início de cada dia.
+    const hoje = new Date().toLocaleDateString('pt-BR');
+    let resetouDiarias = false;
+    tasks.forEach(t => {
+      if (t.freq === 'Diária' && t.done && t.completedAt && new Date(t.completedAt).toLocaleDateString('pt-BR') !== hoje) {
+        t.done = false;
+        delete t.completedAt;
+        t.created = new Date().toISOString();
+        resetouDiarias = true;
+      }
+    });
+    if (resetouDiarias) await saveTasks();
     document.getElementById('sync-status').innerHTML = '<span class="sync-ok">✓ Sincronizado às ' + new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) + '</span>';
   } catch(e) {
     document.getElementById('sync-status').innerHTML = '<span class="sync-err">⚠ Erro ao sincronizar</span>';
