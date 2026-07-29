@@ -138,11 +138,21 @@ let isLoading = false;
 
 // As tarefas diárias funcionam de segunda a sábado. Domingo é folga.
 function isDailyDueToday(task) {
-  return !(task.freq === 'Diária' && new Date().getDay() === 0);
+  // Rotinas diárias e semanais funcionam somente de segunda a sábado.
+  return !((task.freq === 'Diária' || task.freq === 'Semanal') && new Date().getDay() === 0);
 }
 
 // === PRIORITY CALCULATION ===
 function calcPriority(task) {
+  // Tarefas semanais: a urgência depende do dia da semana.
+  // Segunda/terça = baixa, quarta/quinta = média, sexta/sábado = urgente.
+  if (task.freq === 'Semanal' && !task.fixed) {
+    const dia = new Date().getDay();
+    if (dia === 0) return 'baixa'; // domingo: sem cobrança
+    if (dia === 1 || dia === 2) return 'baixa';
+    if (dia === 3 || dia === 4) return 'media';
+    return 'urgente';
+  }
   // Fixed tasks are always Alta
   if (task.fixed) return 'alta';
 
@@ -201,12 +211,16 @@ async function loadTasks() {
     const hoje = new Date().toLocaleDateString('pt-BR');
     let resetouDiarias = false;
     tasks.forEach(t => {
-      if (t.freq === 'Diária' && new Date().getDay() !== 0 && t.done && t.completedAt && new Date(t.completedAt).toLocaleDateString('pt-BR') !== hoje) {
-        t.done = false;
-        delete t.completedAt;
-        delete t.completedBy;
-        t.created = new Date().toISOString();
-        resetouDiarias = true;
+      const agora = new Date();
+      const dia = agora.getDay();
+      const inicioSemana = new Date(agora);
+      inicioSemana.setHours(0,0,0,0);
+      inicioSemana.setDate(agora.getDate() - (dia === 0 ? 6 : dia - 1));
+      if (t.done && t.completedAt && t.freq === 'Diária' && dia !== 0 && new Date(t.completedAt).toLocaleDateString('pt-BR') !== hoje) {
+        t.done = false; delete t.completedAt; delete t.completedBy; t.created = agora.toISOString(); resetouDiarias = true;
+      }
+      if (t.done && t.completedAt && t.freq === 'Semanal' && new Date(t.completedAt) < inicioSemana) {
+        t.done = false; delete t.completedAt; delete t.completedBy; t.created = agora.toISOString(); resetouDiarias = true;
       }
     });
     if (resetouDiarias) await saveTasks();
